@@ -13,7 +13,7 @@
 		327A74241E29099E00898871 /* FBullCowGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 327A74221E29099E00898871 /* FBullCowGame.cpp */; };
 		327A74271E2915F600898871 /* FBullCowView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 327A74251E2915F600898871 /* FBullCowView.cpp */; };
 		32D77AB01E30B69800AB6712 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 32D77AAF1E30B69800AB6712 /* README.md */; };
-		32D77AB21E30BF3700AB6712 /* LICENSE.md in Sources */ = {isa = PBXBuildFile; fileRef = 32D77AB11E30BF3700AB6712 /* LICENSE.md */; };
+		32D77AB21E30BF3700AB6712 /* LICENSE in Sources */ = {isa = PBXBuildFile; fileRef = 32D77AB11E30BF3700AB6712 /* LICENSE */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -42,7 +42,7 @@
 		327A74251E2915F600898871 /* FBullCowView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FBullCowView.cpp; sourceTree = "<group>"; };
 		327A74261E2915F600898871 /* FBullCowView.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FBullCowView.hpp; sourceTree = "<group>"; };
 		32D77AAF1E30B69800AB6712 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		32D77AB11E30BF3700AB6712 /* LICENSE.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = LICENSE.md; sourceTree = "<group>"; };
+		32D77AB11E30BF3700AB6712 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,7 +59,7 @@
 		3251BFBA1E25AC9B00CBBEE7 = {
 			isa = PBXGroup;
 			children = (
-				32D77AB11E30BF3700AB6712 /* LICENSE.md */,
+				32D77AB11E30BF3700AB6712 /* LICENSE */,
 				32D77AAF1E30B69800AB6712 /* README.md */,
 				3251BFC51E25AC9B00CBBEE7 /* BullCowGame */,
 				3251BFC41E25AC9B00CBBEE7 /* Products */,
@@ -153,7 +153,7 @@
 				3251BFC71E25AC9B00CBBEE7 /* main.cpp in Sources */,
 				32D77AB01E30B69800AB6712 /* README.md in Sources */,
 				327A74271E2915F600898871 /* FBullCowView.cpp in Sources */,
-				32D77AB21E30BF3700AB6712 /* LICENSE.md in Sources */,
+				32D77AB21E30BF3700AB6712 /* LICENSE in Sources */,
 				3251BFD01E267F0000CBBEE7 /* FBullCowModel.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
