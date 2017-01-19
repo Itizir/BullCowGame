@@ -3,8 +3,12 @@
 //  Bull Cow Game Model
 //
 //  Created by Diego Becciolini on 11/01/2017.
-//  Copyright © 2017 Itizir. All rights reserved.
+//  Copyright © 2017 Itizir.
+//  This work is free. You can redistribute it and/or modify it under the
+//  terms of the Do What The Fuck You Want To Public License, Version 2,
+//  as published by Sam Hocevar. See the LICENSE.md file for more details.
 //
+
 
 #include "FBullCowModel.hpp"
 
