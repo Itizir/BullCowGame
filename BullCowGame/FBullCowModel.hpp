@@ -14,8 +14,7 @@
 #include <string>
 #include <unordered_map> // For 'TMap'
 #include <bitset> // Used in IsIsogram
-#include <utility> // pair
-#include <deque> // For dictionary and guess history
+#include <vector> // For dictionary and MyGuessChronology
 #include <algorithm> // min,max,find
 
 
@@ -74,7 +73,8 @@ protected:
 	int32 GetMaxLetters() const;
 	FBullCowCount GetCurrentScore() const;
 	FString GetCurrentGuess() const;
-	std::deque< std::pair<FString, FBullCowCount> > const& GetGuessHistory() const;
+	TMap<FString, FBullCowCount> const& GetGuessHistory() const;
+	std::vector< TMap<FString, FBullCowCount>::const_iterator > const& GetGuessChronology() const;
 	FString GetDictionaryName() const;
 	bool IsGameWon() const;
 	/**
@@ -130,19 +130,21 @@ private:
 	FString MyHiddenWord;
 	FString MyCurrentGuess;
 	
-	// Not using map in order to keep them in chronological order.
-	std::deque< std::pair<FString, FBullCowCount> > MyGuessHistory;
+	// Map for easy lookup. Vector of iterators to access elements of MyGuessHistory in chronological order.
+	TMap<FString, FBullCowCount> MyGuessHistory;
+	std::vector< TMap<FString, FBullCowCount>::const_iterator > MyGuessChronology;
 	
 	int32 MyCurrentTry;
 	int32 MyMaxTries;
 	
 	FString DictionaryName;
-	TMap< int32, std::deque<FString> > Dictionary; // Words accessed by their length.
+	TMap< int32, std::vector<FString> > Dictionary; // Words accessed by their length.
 	int32 MinLetters; // Shortest word length in dictionary.
 	int32 MaxLetters; // Longest word length in dictionary.
 	
-	// Random generator, initialised at construction!
-	std::default_random_engine RNG;
+	// Random generator!
+	// Thanks to Dan Marshall for pointing out alternative to deterministic engines!
+	std::random_device RD;
 	
 	/**
 	 Checks if the argument is a word of letters only.

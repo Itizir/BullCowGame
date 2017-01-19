@@ -14,9 +14,7 @@
 FBullCowModel::FBullCowModel(const FString& DictionaryPath) : FBullCowModelProtected(DictionaryPath) {}
 FBullCowModelProtected::FBullCowModelProtected(const FString& DictionaryPath) :
 DictionaryName(DictionaryPath),
-//Dictionary(27), // Waste 0-th element to access by word length directly, and plan maximum margin, even if no 26-letter isogram exists.
-MinLetters(27),MaxLetters(0),
-RNG((unsigned)time(NULL))
+MinLetters(27),MaxLetters(0)
 {
 	LoadDictionary(DictionaryPath);
 }
@@ -35,7 +33,8 @@ int32 FBullCowModelProtected::GetMinLetters() const { return MinLetters; }
 int32 FBullCowModelProtected::GetMaxLetters() const { return MaxLetters; }
 FBullCowCount FBullCowModelProtected::GetCurrentScore() const { return MyCurrentScore; }
 FString FBullCowModelProtected::GetCurrentGuess() const { return MyCurrentGuess; }
-std::deque< std::pair<FString, FBullCowCount> > const& FBullCowModelProtected::GetGuessHistory() const { return MyGuessHistory; }
+TMap<FString, FBullCowCount> const& FBullCowModelProtected::GetGuessHistory() const { return MyGuessHistory; }
+std::vector< TMap<FString, FBullCowCount>::const_iterator > const& FBullCowModelProtected::GetGuessChronology() const { return MyGuessChronology; }
 FString FBullCowModelProtected::GetDictionaryName() const { return DictionaryName; }
 bool FBullCowModelProtected::IsGameWon() const { return bGameIsWon; }
 
@@ -53,11 +52,12 @@ FString FBullCowModelProtected::RevealHiddenWord() const
 void FBullCowModelProtected::ResetRound()
 {
 	MyCurrentGuess = "";
+	MyGuessChronology.clear();
 	MyGuessHistory.clear();
 	MyCurrentTry = 1;
 	bGameIsWon = false;
 	
-	// Still needs to be set afterwards!
+	// Needs to be set afterwards by calling SetRandomHiddenWord()!
 	MyHiddenWord = "";
 	MyMaxTries = 0;
 	
@@ -71,12 +71,12 @@ void FBullCowModelProtected::SetRandomHiddenWord(int32 WordLength=0)
 	std::uniform_int_distribution<unsigned long> PickWordLength(GetMinLetters(),GetMaxLetters());
 	
 	while (WordLength < GetMinLetters() || WordLength > GetMaxLetters() || Dictionary[WordLength].empty())
-		WordLength = (int32)PickWordLength(RNG);
+		WordLength = (int32)PickWordLength(RD);
 	
 	
 	std::uniform_int_distribution<unsigned long> UniformDistr(0,Dictionary[WordLength].size()-1);
 	
-	MyHiddenWord = Dictionary[WordLength][UniformDistr(RNG)];
+	MyHiddenWord = Dictionary[WordLength][UniformDistr(RD)];
 	
 	SetMaxTries();
 	
@@ -86,7 +86,7 @@ void FBullCowModelProtected::SetRandomHiddenWord(int32 WordLength=0)
 
 void FBullCowModelProtected::SetMaxTries()
 {
-	// Still unsure what the scaling should be.
+	// !!!: Still unsure what the scaling should be.
 	MyMaxTries = (int32)MyHiddenWord.length()+5;
 	return;
 }
@@ -111,15 +111,8 @@ void FBullCowModelProtected::SubmitGuess(const FString& Guess)
 	else if (!IsIsogram(GetCurrentGuess()))
 		CurrentStatus = EBCGameStatus::Guess_Not_Isogram;
 	
-	// Not particularly elegant, but price to pay for storing guesses chronologically in simple deque.
-	else if ( find_if(
-					  GetGuessHistory().cbegin(), GetGuessHistory().cend(),
-					  [&](const std::pair<FString,FBullCowCount>& G)
-					  {
-						  return G.first == GetCurrentGuess();
-					  }
-					  ) != GetGuessHistory().cend()
-			 )
+	// Looks like the count(k) analogue in TMap would be Contains(k).
+	else if ( GetGuessHistory().count(GetCurrentGuess()) )
 		CurrentStatus = EBCGameStatus::Guess_Not_New;
 
 	
@@ -143,13 +136,14 @@ void FBullCowModelProtected::ScoreCurrentGuess()
 {
 	int32 WordLength = GetHiddenWordLength();
 	
-	// Current guess cannot be valid, thus score is 0 (i.e. untouched).
-	// Should not be happening!
-	// if (GetCurrentGuess().size() != WordLength)
-	// Replace with status check!
-	// i.e. current guess not valid:
+	
+	// Before: if (GetCurrentGuess().size() != WordLength)
+	// Replaced with status check:
 	if (GetStatus() != EBCGameStatus::Guess_Accepted && GetStatus() != EBCGameStatus::Round_Over)
 		return;
+	// In that case, current guess cannot be valid, thus score is 0 (i.e. untouched).
+	// But should not be happening.
+	
 	
 	MyCurrentScore = FBullCowCount(); // Reset current score!
 	for(int32 MHWi = 0; MHWi < WordLength; ++MHWi)
@@ -165,7 +159,9 @@ void FBullCowModelProtected::ScoreCurrentGuess()
 	}
 	
 	// Record new score in history.
-	MyGuessHistory.emplace_front(GetCurrentGuess(), GetCurrentScore());
+	MyGuessChronology.push_back(
+		MyGuessHistory.emplace(GetCurrentGuess(), GetCurrentScore()).first
+	);
 	
 	bGameIsWon = (GetCurrentScore().Bulls == WordLength);
 	if (bGameIsWon)
@@ -186,6 +182,7 @@ bool FBullCowModelProtected::IsIsogram(const FString& Word) const
 {
 	if (Word.length()<2) { return true; }
 	
+	// Idea of using bitset from Lukáš Venhoda.
 	// Take full char range so to not rely on Word being only letters.
 	std::bitset< 1<<8*sizeof(Word[0]) > LetterSeen; // Should be 256 for standard 8-bit chars.
 	LetterSeen.reset();

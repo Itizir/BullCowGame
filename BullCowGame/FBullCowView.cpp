@@ -236,11 +236,11 @@ void FBullCowViewProtected::PrintGuessFeedback() const
 void FBullCowViewProtected::PrintGuessesSoFar() const
 {
 	std::cout << "\nYour guesses so far :  BULLS  COWS\n";
-	for (auto const& GuessResult : BCModel->GetGuessHistory())
+	for (auto GuessIter = BCModel->GetGuessChronology().crbegin(), StopIter = BCModel->GetGuessChronology().crend(); GuessIter!=StopIter; ++GuessIter )
 	{
-		std::cout << std::setw(19) << std::right << GuessResult.first << " :";
-		std::cout << "  " << std::setw(7) << std::left << GuessResult.second.Bulls;
-		std::cout << GuessResult.second.Cows;
+		std::cout << std::setw(19) << std::right << (*GuessIter)->first << " :";
+		std::cout << "  " << std::setw(7) << std::left << (*GuessIter)->second.Bulls;
+		std::cout << (*GuessIter)->second.Cows;
 		std::cout << std::endl;
 	}
 }
