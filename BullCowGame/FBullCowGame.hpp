@@ -33,18 +33,18 @@ public:
 	/// Deletes game instance and prints exit message.
 	~FBullCowGame();
 	
-	/// Start the game!
-	void PlayGame() const;
+	/// Starts the game!
+	void PlayGame();
 	
 	
 // ****** MARK: - Private ******
 private:
-	FBullCowModel* BCModel;
-	FBullCowView* BCView;
+	FBullCowModel BCModel;
+	FBullCowView BCView;
 	
 	EBCGameStatus GetStatus() const;
 	
-	void PlayRound() const;
+	void PlayRound();
 	/// Asks if player wants to play again.
 	/// @return Whether the player does want another round.
 	bool WantsToPlayAgain() const;

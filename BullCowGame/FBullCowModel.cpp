@@ -16,9 +16,7 @@
 // ****** MARK: - Constructors ******
 
 FBullCowModel::FBullCowModel(const FString& DictionaryPath) : FBullCowModelProtected(DictionaryPath) {}
-FBullCowModelProtected::FBullCowModelProtected(const FString& DictionaryPath) :
-DictionaryName(DictionaryPath),
-MinLetters(27),MaxLetters(0)
+FBullCowModelProtected::FBullCowModelProtected(const FString& DictionaryPath) : DictionaryName(DictionaryPath)
 {
 	LoadDictionary(DictionaryPath);
 }
@@ -70,11 +68,14 @@ void FBullCowModelProtected::ResetRound()
 	return;
 }
 
-void FBullCowModelProtected::SetRandomHiddenWord(int32 WordLength=0)
+// Argument optional, default value = 0. 
+void FBullCowModelProtected::SetRandomHiddenWord(int32 WordLength)
 {
 	std::uniform_int_distribution<unsigned long> PickWordLength(GetMinLetters(),GetMaxLetters());
 	
-	while (WordLength < GetMinLetters() || WordLength > GetMaxLetters() || Dictionary[WordLength].empty())
+	// Since Dictionary is map of word lenghts, easy check...
+	// While word length not in range or if one specific category in range is empty.
+	while (Dictionary.count(WordLength)==0)
 		WordLength = (int32)PickWordLength(RD);
 	
 	
@@ -82,7 +83,7 @@ void FBullCowModelProtected::SetRandomHiddenWord(int32 WordLength=0)
 	
 	MyHiddenWord = Dictionary[WordLength][UniformDistr(RD)];
 	
-	SetMaxTries();
+	SetMaxTries(); // Now that word length is known, can decide number of tries.
 	
 	CurrentStatus = EBCGameStatus::Round_Ready;
 	return;
@@ -97,7 +98,7 @@ void FBullCowModelProtected::SetMaxTries()
 
 void FBullCowModelProtected::SubmitGuess(const FString& Guess)
 {
-	// May not be valid!
+	// So MyCurrentGuess may not be valid!
 	// Store to make sure it is capitalised (to check against history).
 	MyCurrentGuess = Guess;
 	transform(MyCurrentGuess.begin(), MyCurrentGuess.end(), MyCurrentGuess.begin(), toupper);
@@ -140,16 +141,15 @@ void FBullCowModelProtected::ScoreCurrentGuess()
 {
 	int32 WordLength = GetHiddenWordLength();
 	
-	
-	// Before: if (GetCurrentGuess().size() != WordLength)
-	// Replaced with status check:
+	// In that case, current guess cannot be valid, thus score is 0 (i.e. untouched).
+	// But should never be happening.
 	if (GetStatus() != EBCGameStatus::Guess_Accepted && GetStatus() != EBCGameStatus::Round_Over)
 		return;
-	// In that case, current guess cannot be valid, thus score is 0 (i.e. untouched).
-	// But should not be happening.
-	
 	
 	MyCurrentScore = FBullCowCount(); // Reset current score!
+	
+	// For valid guess, guaranteed that both words same length.
+	// Probably not most efficient algorithm, but small words...
 	for(int32 MHWi = 0; MHWi < WordLength; ++MHWi)
 	for(int32 Gi = 0; Gi < WordLength; ++Gi)
 	{
@@ -194,7 +194,8 @@ bool FBullCowModelProtected::IsIsogram(const FString& Word) const
 	for (auto Letter : Word)
 	{
 		// Here just to make sure mixed case still counts as same letter.
-		// Word still recorded in consistent case at this point, potentially
+		// Acutally unneccessary now that all words treated immediately converted to ALLCAPS.
+		// Still leaving in for security.
 		Letter = toupper(Letter);
 		
 		if (LetterSeen[Letter])
@@ -214,6 +215,11 @@ void FBullCowModelProtected::LoadDictionary(const FString& DictionaryName)
 	FString Word;
 	std::ifstream File;
 	File.open(DictionaryName);
+	
+	// Initialise with most extreme values before reading through the dictionary.
+	MinLetters = 27;
+	MaxLetters = 0;
+
 	
 	if (!File.is_open())
 	{

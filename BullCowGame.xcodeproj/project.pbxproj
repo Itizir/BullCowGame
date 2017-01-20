@@ -12,8 +12,6 @@
 		3251BFD01E267F0000CBBEE7 /* FBullCowModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3251BFCE1E267F0000CBBEE7 /* FBullCowModel.cpp */; };
 		327A74241E29099E00898871 /* FBullCowGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 327A74221E29099E00898871 /* FBullCowGame.cpp */; };
 		327A74271E2915F600898871 /* FBullCowView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 327A74251E2915F600898871 /* FBullCowView.cpp */; };
-		32D77AB01E30B69800AB6712 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 32D77AAF1E30B69800AB6712 /* README.md */; };
-		32D77AB21E30BF3700AB6712 /* LICENSE in Sources */ = {isa = PBXBuildFile; fileRef = 32D77AB11E30BF3700AB6712 /* LICENSE */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -151,9 +149,7 @@
 			files = (
 				327A74241E29099E00898871 /* FBullCowGame.cpp in Sources */,
 				3251BFC71E25AC9B00CBBEE7 /* main.cpp in Sources */,
-				32D77AB01E30B69800AB6712 /* README.md in Sources */,
 				327A74271E2915F600898871 /* FBullCowView.cpp in Sources */,
-				32D77AB21E30BF3700AB6712 /* LICENSE in Sources */,
 				3251BFD01E267F0000CBBEE7 /* FBullCowModel.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

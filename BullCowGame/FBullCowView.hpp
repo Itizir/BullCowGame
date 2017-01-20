@@ -57,7 +57,8 @@ private:
 	/// Private: should only be created with FBullCowModel provided!
 	FBullCowViewProtected();
 	
-	FBullCowModel* BCModel;
+	// Game model should not change and be changed by the view.
+	const FBullCowModel* const BCModel;
 	
 	EBCGameStatus GetStatus() const;
 	

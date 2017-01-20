@@ -24,7 +24,7 @@ FBullCowViewProtected::FBullCowViewProtected(FBullCowModel* BCPointer) : BCModel
 // ****** MARK: - Message selection ******
 
 void FBullCowViewProtected::PrintGameStatus() const
-{
+{	
 	switch (GetStatus()) {
 		case EBCGameStatus::New:
 			PrintIntro();
@@ -223,6 +223,7 @@ void FBullCowViewProtected::PrintGuessFeedback() const
 	FText BullPlural = (Score.Bulls==1? "! " : "s!");
 	FText CowPlural = (Score.Cows==1? "... " : "s...");
 
+	// Sorry, this looks ugly here... :s
 	std::cout << "All rightee!\n";
 	std::cout << "\nYou scored " << std::setw(2) << std::right << Score.Bulls;
 	std::cout << " Bull" + BullPlural;
@@ -239,6 +240,8 @@ void FBullCowViewProtected::PrintGuessFeedback() const
 
 void FBullCowViewProtected::PrintGuessesSoFar() const
 {
+	// For now print in reverse-chronological order.
+	// Other possible design choice: by score (then perhaps use multimap where score is key for that).
 	std::cout << "\nYour guesses so far :  BULLS  COWS\n";
 	for (auto GuessIter = BCModel->GetGuessChronology().crbegin(), StopIter = BCModel->GetGuessChronology().crend(); GuessIter!=StopIter; ++GuessIter )
 	{

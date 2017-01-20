@@ -68,7 +68,7 @@ protected:
 	/// @param DictionaryPath Path to dictionary.
 	FBullCowModelProtected(const FString& DictionaryPath);
 	
-	// Getters.
+	// ****** MARK: Getters ******
 	EBCGameStatus GetStatus() const;
 	int32 GetMaxTries() const;
 	int32 GetCurrentTry() const;
@@ -88,6 +88,9 @@ protected:
 	 */
 	FString RevealHiddenWord() const;
 	
+	
+	// ****** MARK: Game control ******
+	
 	/**
 	 Reinitialises all game parameters, but does not set the hidden word!
 	 Sets game in Round_Reset state.
@@ -98,13 +101,13 @@ protected:
 	 If invalid or unavailable WordLength, picks a word length at random.
 	 Sets game in Round_Ready state.
 	 
-	 @param WordLength Word length requested.
+	 @param WordLength Word length requested, can be omitted for random pick of length.
 	 */
-	void SetRandomHiddenWord(int32 WordLength);
+	void SetRandomHiddenWord(int32 WordLength = 0);
 	
 	/**
 	 Main interface used by FBullCowGame.
-	 Check if given guess is isogram of valid format
+	 Checks if given guess is isogram of valid format
 	 (word with all different letters and right length).
 	 If yes, increments try number and records current guess
 	 (calls then ScoreCurrentGuess() to keep state of game up-to-date).
@@ -113,13 +116,6 @@ protected:
 	 */
 	void SubmitGuess(const FString& Guess);
 	
-	/**
-	 Checks score of the current guess:
-	 - counts bulls and cows to update MyCurrentScore
-	 - updates win status
-	 */
-	void ScoreCurrentGuess();
-	
 	
 // ****** MARK: - Private ******
 private:
@@ -127,6 +123,8 @@ private:
 	// Private: should not be created without a dictionary!
 	FBullCowModelProtected();
 	
+	
+	// ****** MARK: Members ******
 	EBCGameStatus CurrentStatus;
 	FBullCowCount MyCurrentScore;
 	bool bGameIsWon;
@@ -150,9 +148,29 @@ private:
 	// Thanks to Dan Marshall for pointing out alternative to deterministic engines!
 	std::random_device RD;
 	
+	
+	// ****** MARK: Methods ******
+	
+	
+	/**
+	 Sets the allowed number of tries.
+	 Called by SetRandomHiddenWord because potentially could be made to depend on
+	 length of chosen word.
+	 */
+	void SetMaxTries();
+	
+	/**
+	 Checks score of the current guess:
+	 - counts bulls and cows to update MyCurrentScore
+	 - records guess in history
+	 - updates win status
+	 */
+	void ScoreCurrentGuess();
+	
+	
 	/**
 	 Checks if the argument is a word of letters only.
-
+	 
 	 @param Word Any FString.
 	 */
 	bool IsAlpha(const FString& Word) const;
@@ -160,7 +178,7 @@ private:
 	/**
 	 Checks if the argument is an isogram:
 	 a word without repeating characters.
-
+	 
 	 @param Word Any FString
 	 */
 	bool IsIsogram(const FString& Word) const;
@@ -170,16 +188,10 @@ private:
 	 Tries to load the provided dictionary at creation.
 	 Failing so puts the game in an error state (EBCGameStatus::No_Dictionary, etc.).
 	 If success, game is in EBCGameStatus::New state.
-
+	 
 	 @param DictionaryName Path to the dictionary file.
 	 */
 	void LoadDictionary(const FString& DictionaryName);
-	/**
-	 Sets the allowed number of tries.
-	 Called by SetRandomHiddenWord because potentially could be made to depend on
-	 length of chosen word.
-	 */
-	void SetMaxTries();
 };
 
 

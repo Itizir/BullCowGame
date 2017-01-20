@@ -13,38 +13,35 @@
 #include "FBullCowGame.hpp"
 
 
-EBCGameStatus FBullCowGame::GetStatus() const { return BCModel->GetStatus(); }
+EBCGameStatus FBullCowGame::GetStatus() const { return BCModel.GetStatus(); }
 
 // ****** MARK: - Constructors ******
 
-FBullCowGame::FBullCowGame(const FText& DictionaryPath)
+// Can actually already pass the address of BCModel at this point: no need to manually allocate.
+FBullCowGame::FBullCowGame(const FText& DictionaryPath) : BCModel(DictionaryPath), BCView(&BCModel)
 {
-	BCModel = new FBullCowModel(DictionaryPath);
-	BCView  = new FBullCowView(BCModel);
+	BCView.PrintGameStatus(); // Prints intro or error.
 	
-	BCView->PrintGameStatus(); // Prints intro or error.
-	
+	// Game successfully created.
 	if(GetStatus()==EBCGameStatus::New)
 	{
-		FText Answer = BCView->PromptAndGetInput(); // Asks if need help with rules.
+		FText Answer = BCView.PromptAndGetInput(); // Asks if need help with rules.
 		if (tolower(Answer[0]) == 'y')
-			BCView->PrintRules();
-		BCModel->ResetRound();
+			BCView.PrintRules();
+		BCModel.ResetRound(); // Now game is in Round_Reset state, ready to start a round.
 	}
 }
 FBullCowGame::~FBullCowGame()
 {
-	BCView->PrintExit();
-	
-	delete BCView;
-	delete BCModel;
+	BCView.PrintExit();
 }
 
 
 // ****** MARK: - Public interface ******
 
-void FBullCowGame::PlayGame() const
+void FBullCowGame::PlayGame()
 {
+	// Game will be Round_Reset state if created successfully.
 	while ( GetStatus() == EBCGameStatus::Round_Reset || ( GetStatus() == EBCGameStatus::Round_Over && WantsToPlayAgain() ) )
 	{
 		PlayRound();
@@ -54,32 +51,31 @@ void FBullCowGame::PlayGame() const
 
 // ****** MARK: - Game interaction ******
 
-void FBullCowGame::PlayRound() const
+void FBullCowGame::PlayRound()
 {
 	FText PlayerAnswer;
 	
-	BCModel->ResetRound(); // Happens a second time if the game was brand new. Oh well.
-	PlayerAnswer = BCView->PromptAndGetInput();
-	BCModel->SetRandomHiddenWord(std::atoi(PlayerAnswer.c_str()));
+	BCModel.ResetRound(); // Happens a second time if the game was brand new. Oh well.
+	PlayerAnswer = BCView.PromptAndGetInput(); // Asks for desired word length.
+	BCModel.SetRandomHiddenWord(std::atoi(PlayerAnswer.c_str()));
 	
-	BCView->PrintGameStatus(); // Reveals word length and max tries.
+	BCView.PrintGameStatus(); // Reveals word length and max tries.
 	
 	while ( GetStatus() != EBCGameStatus::Round_Over )
 	{
-		PlayerAnswer = BCView->PromptAndGetInput();
-		BCModel->SubmitGuess(PlayerAnswer);
-		
-		if(PlayerAnswer.empty()) // *After* SubmitGuess to make sure status cannot have stayed as Round_Ready.
+		PlayerAnswer = BCView.PromptAndGetInput();
+		if(PlayerAnswer.empty()) // Now that Round_Reset and Round_Ready are separate states, can exit the loop here already.
 			return;
 
-		BCView->PrintGameStatus();
+		BCModel.SubmitGuess(PlayerAnswer);
+		BCView.PrintGameStatus();
 	}
 }
 
 bool FBullCowGame::WantsToPlayAgain() const
 {
 	FText PlayerAnswer;
-	PlayerAnswer = BCView->PromptAndGetInput();
+	PlayerAnswer = BCView.PromptAndGetInput();
 	
 	return (tolower(PlayerAnswer[0]) == 'y');
 }

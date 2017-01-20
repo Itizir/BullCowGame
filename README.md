@@ -10,6 +10,8 @@ Major changes and additions include:
 - Word-length selection.
 - The list of past guesses is updated and printed each turn.
 
+Apart from curating better dictionaries for the game, the main improvement that could still be made is the tuning of the difficulty, i.e. the number of tries granted to the player. Perhaps even make it dynamical, with various settings, or according to player success or feedback.
+
 ## Dictionary files
 Three different dictionaries are provided:
 - [isograms.txt](BullCowGame/isograms.txt), the default, is derived from [one of Wiktionary's frequency lists](https://en.wiktionary.org/wiki/Wiktionary:Frequency_lists/PG/2006/04/1-10000) (3683 words)
